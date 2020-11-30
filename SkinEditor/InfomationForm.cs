@@ -74,7 +74,7 @@ namespace SkinEditor
                 Label_PressPath.Text = setting.PressImagePath;
             }
 
-            Panel_Image.Invalidate();
+            Panel_Image.Refresh();
         }
 
         private void Capture_Value_Changed(object sender, EventArgs e)

@@ -37,19 +37,19 @@ namespace SkinEditor
             this.ToolStripMenuItem_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolStripMenuItem_Close = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolStripMenuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
+            this.ToolStripLabel_SkinName = new System.Windows.Forms.ToolStripLabel();
+            this.ToolStripTextBox_SkinName = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.ToolStripLabel_Keys = new System.Windows.Forms.ToolStripLabel();
             this.ToolStripComboBox_Keys = new System.Windows.Forms.ToolStripComboBox();
             this.ToolStripButton_Add = new System.Windows.Forms.ToolStripButton();
-            this.ToolStripMenuItem_Close = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.Panel_Owner.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox_Viewer)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -66,7 +66,7 @@ namespace SkinEditor
             this.Panel_Owner.Name = "Panel_Owner";
             this.Panel_Owner.Size = new System.Drawing.Size(704, 340);
             this.Panel_Owner.TabIndex = 0;
-           // 
+            // 
             // PictureBox_Viewer
             // 
             this.PictureBox_Viewer.Location = new System.Drawing.Point(0, 0);
@@ -122,6 +122,18 @@ namespace SkinEditor
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(178, 6);
             // 
+            // ToolStripMenuItem_Close
+            // 
+            this.ToolStripMenuItem_Close.Name = "ToolStripMenuItem_Close";
+            this.ToolStripMenuItem_Close.Size = new System.Drawing.Size(181, 22);
+            this.ToolStripMenuItem_Close.Text = "閉じる(&C)";
+            this.ToolStripMenuItem_Close.Click += new System.EventHandler(this.ToolStripMenuItem_Close_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(178, 6);
+            // 
             // ToolStripMenuItem_Exit
             // 
             this.ToolStripMenuItem_Exit.Name = "ToolStripMenuItem_Exit";
@@ -155,10 +167,10 @@ namespace SkinEditor
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel1,
-            this.toolStripTextBox1,
+            this.ToolStripLabel_SkinName,
+            this.ToolStripTextBox_SkinName,
             this.toolStripSeparator1,
-            this.toolStripLabel2,
+            this.ToolStripLabel_Keys,
             this.ToolStripComboBox_Keys,
             this.ToolStripButton_Add});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
@@ -167,28 +179,28 @@ namespace SkinEditor
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripLabel1
+            // ToolStripLabel_SkinName
             // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(46, 22);
-            this.toolStripLabel1.Text = "スキン名";
+            this.ToolStripLabel_SkinName.Name = "ToolStripLabel_SkinName";
+            this.ToolStripLabel_SkinName.Size = new System.Drawing.Size(46, 22);
+            this.ToolStripLabel_SkinName.Text = "スキン名";
             // 
-            // toolStripTextBox1
+            // ToolStripTextBox_SkinName
             // 
-            this.toolStripTextBox1.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
-            this.toolStripTextBox1.Name = "toolStripTextBox1";
-            this.toolStripTextBox1.Size = new System.Drawing.Size(150, 25);
+            this.ToolStripTextBox_SkinName.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.ToolStripTextBox_SkinName.Name = "ToolStripTextBox_SkinName";
+            this.ToolStripTextBox_SkinName.Size = new System.Drawing.Size(150, 25);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripLabel2
+            // ToolStripLabel_Keys
             // 
-            this.toolStripLabel2.Name = "toolStripLabel2";
-            this.toolStripLabel2.Size = new System.Drawing.Size(67, 22);
-            this.toolStripLabel2.Text = "キャプチャキー";
+            this.ToolStripLabel_Keys.Name = "ToolStripLabel_Keys";
+            this.ToolStripLabel_Keys.Size = new System.Drawing.Size(67, 22);
+            this.ToolStripLabel_Keys.Text = "キャプチャキー";
             // 
             // ToolStripComboBox_Keys
             // 
@@ -205,18 +217,6 @@ namespace SkinEditor
             this.ToolStripButton_Add.Size = new System.Drawing.Size(35, 22);
             this.ToolStripButton_Add.Text = "追加";
             this.ToolStripButton_Add.Click += new System.EventHandler(this.ToolStripButton_Add_Click);
-            // 
-            // ToolStripMenuItem_Close
-            // 
-            this.ToolStripMenuItem_Close.Name = "ToolStripMenuItem_Close";
-            this.ToolStripMenuItem_Close.Size = new System.Drawing.Size(181, 22);
-            this.ToolStripMenuItem_Close.Text = "閉じる(&C)";
-            this.ToolStripMenuItem_Close.Click += new System.EventHandler(this.ToolStripMenuItem_Close_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(178, 6);
             // 
             // MainForm
             // 
@@ -263,10 +263,10 @@ namespace SkinEditor
         private System.Windows.Forms.ToolStripComboBox ToolStripComboBox_Keys;
         private System.Windows.Forms.ToolStripButton ToolStripButton_Add;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Save;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
+        private System.Windows.Forms.ToolStripLabel ToolStripLabel_SkinName;
+        private System.Windows.Forms.ToolStripTextBox ToolStripTextBox_SkinName;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripLabel ToolStripLabel_Keys;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Close;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }

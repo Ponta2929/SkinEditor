@@ -5,7 +5,6 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace SkinEditor
@@ -50,7 +49,6 @@ namespace SkinEditor
                 RubberBand[i].BackColor = Color.White;
                 RubberBand[i].BorderStyle = BorderStyle.FixedSingle;
                 RubberBand[i].Visible = false;
-                RubberBand[i].MouseDown += RubberBand_MouseDown;
                 RubberBand[i].MouseMove += RubberBand_MouseMove;
                 RubberBand[i].MouseUp += RubberBand_MouseUp;
 
@@ -58,11 +56,13 @@ namespace SkinEditor
                 Panel_Owner.Controls.Add(RubberBand[i]);
             }
 
+            // カーソル指定
             RubberBand[0].Cursor = RubberBand[7].Cursor = Cursors.SizeNWSE;
             RubberBand[1].Cursor = RubberBand[6].Cursor = Cursors.SizeNS;
             RubberBand[2].Cursor = RubberBand[5].Cursor = Cursors.SizeNESW;
             RubberBand[3].Cursor = RubberBand[4].Cursor = Cursors.SizeWE;
 
+            // 最前面に配置
             Panel_Owner.Controls.SetChildIndex(PictureBox_Viewer, Panel_Owner.Controls.Count - 1);
 
             // キーリストを作成
@@ -96,10 +96,10 @@ namespace SkinEditor
                 registeredListForm = new RegisteredListForm();
 
                 // MainForm
-                this.Height = setting.Height;
-                this.Width = setting.Width;
-                this.Top = setting.Y;
-                this.Left = setting.X;
+                Height = setting.Height;
+                Width = setting.Width;
+                Top = setting.Y;
+                Left = setting.X;
 
                 // RegisteredListForm
                 registeredListForm.Height = setting.RegisteredListForm_Height;
@@ -119,6 +119,13 @@ namespace SkinEditor
             keyboardHook.KeyboardHooked += KeyboardHooked;
             setting.SettingChanged += SettingChanged;
             setting.SelectedBorderChanged += SelectedBorderChanged;
+        }
+        
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // ツールウィンドウ表示
+            registeredListForm.Show(this);
+            infomationForm.Show(this);
         }
 
         private void SelectedBorderChanged(object sender, EventArgs e)
@@ -148,15 +155,9 @@ namespace SkinEditor
             RubberBand[7].Top = setting.Select_Y + setting.Select_Height - 4;
         }
 
-        private void RubberBand_MouseUp(object sender, MouseEventArgs e)
-        {
+        private void RubberBand_MouseUp(object sender, MouseEventArgs e) =>
             setting.OnSettingChanged();
-        }
 
-        private void RubberBand_MouseDown(object sender, MouseEventArgs e)
-        {
-
-        }
         private void RubberBand_MouseMove(object sender, MouseEventArgs e)
         {
             var rubberBand = (Panel)sender;
@@ -226,18 +227,21 @@ namespace SkinEditor
                 setting.OnSelectedBorderChanged();
             }
 
+            // 画面更新
             PictureBox_Viewer.Refresh();
         }
 
         private void SettingChanged(object sender, EventArgs e)
         {
             setting.OnSelectedBorderChanged();
+
+            // 画面更新
             PictureBox_Viewer.Refresh();
         }
 
         private void KeyboardHooked(object sender, KeyboardHookedEventArgs e)
         {
-            if (e.UpDown == KeyboardUpDown.Up && API.GetForegroundWindow() == Handle && !toolStripTextBox1.Focused)
+            if (e.UpDown == KeyboardUpDown.Up && API.GetForegroundWindow() == Handle && !ToolStripTextBox_SkinName.Focused)
             {
                 e.Cancel = true;
 
@@ -277,12 +281,11 @@ namespace SkinEditor
         {
             if (e.Button == MouseButtons.Left)
             {
-
                 if (setting.Select_X < e.X && setting.Select_X + setting.Select_Width > e.X &&
                     setting.Select_Y < e.Y && setting.Select_Y + setting.Select_Height > e.Y)
                 {
-                    setting.Select_X += e.X - setting.Select_X  - r_x;
-                    setting.Select_Y += e.Y - setting.Select_Y  - r_y;
+                    setting.Select_X += e.X - setting.Select_X - r_x;
+                    setting.Select_Y += e.Y - setting.Select_Y - r_y;
                 }
                 else
                 {
@@ -310,10 +313,10 @@ namespace SkinEditor
                     PictureBox_Viewer.Cursor = Cursors.Default;
 
                 }
-
             }
 
-            PictureBox_Viewer.Invalidate();
+            // 画面更新
+            PictureBox_Viewer.Refresh();
         }
 
         private void ToolStripMenuItem_Open_Click(object sender, EventArgs e)
@@ -329,6 +332,8 @@ namespace SkinEditor
                     {
                         setting.NormalImagePath = ofd.FileName;
                         PictureBox_Viewer.Image = setting.NormalImage = (Bitmap)Bitmap.FromFile(ofd.FileName);
+
+                        // 画像読み込みフラグ
                         first = true;
                     }
                 }
@@ -344,6 +349,8 @@ namespace SkinEditor
                     {
                         setting.PressImagePath = ofd.FileName;
                         setting.PressImage = (Bitmap)Bitmap.FromFile(ofd.FileName);
+
+                        // 画像読み込みフラグ
                         second = true;
                     }
                 }
@@ -352,14 +359,25 @@ namespace SkinEditor
 
         private void PictureBox_Viewer_MouseUp(object sender, MouseEventArgs e)
         {
-            for (var i = 0; i < RubberBand.Length; i++)
+            if (setting.Select_Width == 0 && setting.Select_Height == 0)
             {
-                RubberBand[i].Visible = true;
+                for (var i = 0; i < RubberBand.Length; i++)
+                {
+                    RubberBand[i].Visible = false;
+                }
+            }
+            else
+            {
+                for (var i = 0; i < RubberBand.Length; i++)
+                {
+                    RubberBand[i].Visible = true;
+                }
             }
 
             setting.OnSelectedBorderChanged();
             setting.OnSettingChanged();
         }
+
         private void ToolStripButton_Add_Click(object sender, EventArgs e)
         {
             // 選択された部分を追加
@@ -374,15 +392,19 @@ namespace SkinEditor
                     Height = setting.Select_Height,
                 });
             }
-            catch { }
+            catch
+            {
+
+            }
         }
 
         private void ToolStripMenuItem_Exit_Click(object sender, EventArgs e) =>
-            this.Close();
+            Close();
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            setting.X = this.Left;
+            // 設定値
+            setting.X = Left;
             setting.Y = Top;
             setting.Width = Width;
             setting.Height = Height;
@@ -399,6 +421,7 @@ namespace SkinEditor
 
         private void ToolStripMenuItem_Close_Click(object sender, EventArgs e)
         {
+            // 編集中のデータをすべてクリア
             for (var i = 0; i < RubberBand.Length; i++)
             {
                 RubberBand[i].Visible = false;
@@ -444,7 +467,7 @@ namespace SkinEditor
                         // スキン情報作成
                         var info = new SkinInfomation()
                         {
-                            SkinName = toolStripTextBox1.Text,
+                            SkinName = ToolStripTextBox_SkinName.Text,
                             NormalImage = Path.GetFileName(setting.NormalImagePath),
                             PressImage = Path.GetFileName(setting.PressImagePath),
                             Keys = setting.Keys.ToArray()
@@ -462,15 +485,12 @@ namespace SkinEditor
             }
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            registeredListForm.Show(this);
-            infomationForm.Show(this);
-        }
-
         private void PictureBox_Viewer_Paint(object sender, PaintEventArgs e) =>
-                e.Graphics.DrawRectangle(Pens.Red, new Rectangle(setting.Select_X, setting.Select_Y, setting.Select_Width, setting.Select_Height));
+            e.Graphics.DrawRectangle(Pens.Red, new Rectangle(setting.Select_X, setting.Select_Y, setting.Select_Width, setting.Select_Height));
 
+        /// <summary>
+        /// 座標修正します。
+        /// </summary>
         private void AxisNormalization()
         {
             if (setting.Select_Width < 0)
