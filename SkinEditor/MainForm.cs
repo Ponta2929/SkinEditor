@@ -22,14 +22,15 @@ namespace SkinEditor
         private int x, y;
         private int m_dx, m_dy;
         private int r_x, r_y;
-
+        private Color color_mode = Color.Red;
 
         private string filter = "読み込み可能なファイル|*.bmp;*.jpg;*.jpeg;*.png";
         private bool first, second;
 
+        private Panel[] RubberBand = new Panel[8];
+        private bool readWait = false;
         #endregion
 
-        private Panel[] RubberBand = new Panel[8];
 
         public MainForm()
         {
@@ -120,7 +121,7 @@ namespace SkinEditor
             setting.SettingChanged += SettingChanged;
             setting.SelectedBorderChanged += SelectedBorderChanged;
         }
-        
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             // ツールウィンドウ表示
@@ -275,49 +276,90 @@ namespace SkinEditor
                     m_dy = e.Y;
                 }
             }
+            else if (e.Button == MouseButtons.Right)
+            {
+                if (color_mode == Color.Red)
+                {
+                    color_mode = Color.Lime;
+                }
+                else if (color_mode == Color.Lime)
+                {
+                    color_mode = Color.Blue;
+                }
+                else if (color_mode == Color.Blue)
+                {
+                    color_mode = Color.Red;
+                }
+            }
         }
 
         private void PictureBox_Viewer_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (!readWait)
             {
-                if (setting.Select_X < e.X && setting.Select_X + setting.Select_Width > e.X &&
-                    setting.Select_Y < e.Y && setting.Select_Y + setting.Select_Height > e.Y)
+                if (e.Button == MouseButtons.Left)
                 {
-                    setting.Select_X += e.X - setting.Select_X - r_x;
-                    setting.Select_Y += e.Y - setting.Select_Y - r_y;
+                    if (setting.Select_X < e.X && setting.Select_X + setting.Select_Width > e.X &&
+                        setting.Select_Y < e.Y && setting.Select_Y + setting.Select_Height > e.Y)
+                    {
+                        setting.Select_X += e.X - setting.Select_X - r_x;
+                        setting.Select_Y += e.Y - setting.Select_Y - r_y;
+                    }
+                    else
+                    {
+                        x = e.X;
+                        y = e.Y;
+
+                        setting.Select_X = m_dx;
+                        setting.Select_Y = m_dy;
+                        setting.Select_Width = x - m_dx;
+                        setting.Select_Height = y - m_dy;
+                    }
+
+                    // 座標反転
+                    AxisNormalization();
                 }
                 else
                 {
-                    x = e.X;
-                    y = e.Y;
-
-                    setting.Select_X = m_dx;
-                    setting.Select_Y = m_dy;
-                    setting.Select_Width = x - m_dx;
-                    setting.Select_Height = y - m_dy;
-                }
-
-                // 座標反転
-                AxisNormalization();
-            }
-            else
-            {
-                if (setting.Select_X < e.X && setting.Select_X + setting.Select_Width > e.X &&
-                    setting.Select_Y < e.Y && setting.Select_Y + setting.Select_Height > e.Y)
-                {
-                    PictureBox_Viewer.Cursor = Cursors.SizeAll;
-                }
-                else
-                {
-                    PictureBox_Viewer.Cursor = Cursors.Default;
-
+                    if (setting.Select_X < e.X && setting.Select_X + setting.Select_Width > e.X &&
+                        setting.Select_Y < e.Y && setting.Select_Y + setting.Select_Height > e.Y)
+                    {
+                        PictureBox_Viewer.Cursor = Cursors.SizeAll;
+                    }
+                    else
+                    {
+                        PictureBox_Viewer.Cursor = Cursors.Default;
+                    }
                 }
             }
 
             // 画面更新
             PictureBox_Viewer.Refresh();
         }
+
+        private void PictureBox_Viewer_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (setting.Select_Width == 0 && setting.Select_Height == 0)
+            {
+                for (var i = 0; i < RubberBand.Length; i++)
+                {
+                    RubberBand[i].Visible = false;
+                }
+            }
+            else
+            {
+                for (var i = 0; i < RubberBand.Length; i++)
+                {
+                    RubberBand[i].Visible = true;
+                }
+            }
+
+            setting.OnSelectedBorderChanged();
+            setting.OnSettingChanged();
+        }
+        
+        private void PictureBox_Viewer_Paint(object sender, PaintEventArgs e) =>
+            e.Graphics.DrawRectangle(new Pen(color_mode), new Rectangle(setting.Select_X, setting.Select_Y, setting.Select_Width, setting.Select_Height));
 
         private void ToolStripMenuItem_Open_Click(object sender, EventArgs e)
         {
@@ -355,28 +397,11 @@ namespace SkinEditor
                     }
                 }
             }
+
+            readWait = true;
+            Timer_ReadWait.Start();
         }
 
-        private void PictureBox_Viewer_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (setting.Select_Width == 0 && setting.Select_Height == 0)
-            {
-                for (var i = 0; i < RubberBand.Length; i++)
-                {
-                    RubberBand[i].Visible = false;
-                }
-            }
-            else
-            {
-                for (var i = 0; i < RubberBand.Length; i++)
-                {
-                    RubberBand[i].Visible = true;
-                }
-            }
-
-            setting.OnSelectedBorderChanged();
-            setting.OnSettingChanged();
-        }
 
         private void ToolStripButton_Add_Click(object sender, EventArgs e)
         {
@@ -411,12 +436,18 @@ namespace SkinEditor
 
             try
             {
-                setting.FileSerialize(Application.StartupPath + "\\setting.xml");
+                setting.FileSerialize($"{Application.StartupPath}\\setting.xml");
             }
             catch
             {
 
             }
+        }
+
+        private void Timer_ReadWait_Tick(object sender, EventArgs e)
+        {
+            readWait = false;
+            Timer_ReadWait.Stop();
         }
 
         private void ToolStripMenuItem_Close_Click(object sender, EventArgs e)
@@ -448,11 +479,11 @@ namespace SkinEditor
         {
             if (!first)
             {
-                MessageBox.Show("１番目の画像が選択されていません。", "保存エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(this, "１番目の画像が選択されていません。", "保存エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             if (!second)
             {
-                MessageBox.Show("２番目の画像が選択されていません。", "保存エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(this, "２番目の画像が選択されていません。", "保存エラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             if (first && second)
@@ -482,11 +513,10 @@ namespace SkinEditor
                         }
                     }
                 }
+                MessageBox.Show(this, "使用したリソースは、保存したXMLファイルと同一フォルダに保存してください。", "保存が完了しました。", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             }
         }
-
-        private void PictureBox_Viewer_Paint(object sender, PaintEventArgs e) =>
-            e.Graphics.DrawRectangle(Pens.Red, new Rectangle(setting.Select_X, setting.Select_Y, setting.Select_Width, setting.Select_Height));
 
         /// <summary>
         /// 座標修正します。

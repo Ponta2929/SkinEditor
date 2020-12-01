@@ -29,6 +29,7 @@ namespace SkinEditor
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.Panel_Owner = new System.Windows.Forms.Panel();
             this.PictureBox_Viewer = new System.Windows.Forms.PictureBox();
@@ -50,6 +51,7 @@ namespace SkinEditor
             this.ToolStripLabel_Keys = new System.Windows.Forms.ToolStripLabel();
             this.ToolStripComboBox_Keys = new System.Windows.Forms.ToolStripComboBox();
             this.ToolStripButton_Add = new System.Windows.Forms.ToolStripButton();
+            this.Timer_ReadWait = new System.Windows.Forms.Timer(this.components);
             this.Panel_Owner.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox_Viewer)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -218,6 +220,11 @@ namespace SkinEditor
             this.ToolStripButton_Add.Text = "追加";
             this.ToolStripButton_Add.Click += new System.EventHandler(this.ToolStripButton_Add_Click);
             // 
+            // Timer_ReadWait
+            // 
+            this.Timer_ReadWait.Interval = 1000;
+            this.Timer_ReadWait.Tick += new System.EventHandler(this.Timer_ReadWait_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -269,6 +276,7 @@ namespace SkinEditor
         private System.Windows.Forms.ToolStripLabel ToolStripLabel_Keys;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Close;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.Timer Timer_ReadWait;
     }
 }
 
